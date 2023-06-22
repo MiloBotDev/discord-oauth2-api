@@ -1,0 +1,5 @@
+{
+  "clientId": "CLIENT_ID",
+  "clientSecret": "CLIENT_SECRET",
+  "redirectUri": "OAUTH2_REDIRECT_URI"
+}
