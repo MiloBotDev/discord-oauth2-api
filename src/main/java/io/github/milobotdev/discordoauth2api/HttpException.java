@@ -20,8 +20,8 @@ import java.net.http.HttpResponse;
 
 public class HttpException extends Exception {
 
-    HttpResponse<String> response;
-    String message;
+    private final HttpResponse<String> response;
+    private final String message;
 
     public HttpException(HttpResponse<String> response, String message) {
         this.response = response;

@@ -17,11 +17,10 @@
 package io.github.milobotdev.discordoauth2api;
 
 import com.google.gson.Gson;
-import io.github.milobotdev.discordoauth2api.models.Guild;
 import io.github.milobotdev.discordoauth2api.models.AccessTokenResponse;
+import io.github.milobotdev.discordoauth2api.models.Guild;
 import io.github.milobotdev.discordoauth2api.models.User;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
