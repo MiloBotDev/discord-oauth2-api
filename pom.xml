@@ -7,6 +7,31 @@
     <groupId>io.github.milobotdev.discordoauth2api</groupId>
     <artifactId>discord-oauth2-api</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>Discord OAuth2 API</name>
+    <description>A Java Discord OAuth2 API library</description>
+    <url>https://github.com/MiloBotDev/discord-oauth2-api</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Gabor Szita</name>
+            <email>gaborszita@yahoo.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/MiloBotDev/discord-oauth2-api.git</connection>
+        <developerConnection>scm:git:ssh://github.com:MiloBotDev/discord-oauth2-api.git</developerConnection>
+        <url>https://github.com/MiloBotDev/discord-oauth2-api/tree/main</url>
+    </scm>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
