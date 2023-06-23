@@ -6,7 +6,7 @@
 
     <groupId>io.github.milobotdev.discordoauth2api</groupId>
     <artifactId>discord-oauth2-api</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-alpha.1</version>
     <packaging>jar</packaging>
 
     <name>Discord OAuth2 API</name>
