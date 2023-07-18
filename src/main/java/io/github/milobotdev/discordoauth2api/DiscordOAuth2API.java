@@ -18,8 +18,11 @@ package io.github.milobotdev.discordoauth2api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.milobotdev.discordoauth2api.exceptions.HttpException;
+import io.github.milobotdev.discordoauth2api.exceptions.RateLimitExceededException;
 import io.github.milobotdev.discordoauth2api.models.Guild;
 import io.github.milobotdev.discordoauth2api.models.AccessTokenResponse;
+import io.github.milobotdev.discordoauth2api.models.RateLimitExceededResponse;
 import io.github.milobotdev.discordoauth2api.models.User;
 import org.jetbrains.annotations.NotNull;
 
@@ -88,11 +91,8 @@ public class DiscordOAuth2API {
                 .build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != 200) {
-            throw new HttpException(response, "HTTP status code " + response.statusCode() + " didn't match expected 200.");
-        } else {
-            return new Gson().fromJson(response.body(), AccessTokenResponse.class);
-        }
+        throwHttpException(response, 200);
+        return new Gson().fromJson(response.body(), AccessTokenResponse.class);
     }
 
     @NotNull
@@ -101,11 +101,8 @@ public class DiscordOAuth2API {
         HttpRequest req = HttpRequest.newBuilder(URI.create(uri)).header("Authorization", "Bearer " + accessToken).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != 200) {
-            throw new HttpException(response, "HTTP status code " + response.statusCode() + " didn't match expected 200.");
-        } else {
-            return new GsonBuilder().serializeNulls().create().fromJson(response.body(), User.class);
-        }
+        throwHttpException(response, 200);
+        return new GsonBuilder().serializeNulls().create().fromJson(response.body(), User.class);
     }
 
     @NotNull
@@ -114,10 +111,18 @@ public class DiscordOAuth2API {
         HttpRequest req = HttpRequest.newBuilder(URI.create(uri)).header("Authorization", "Bearer " + accessToken).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(req, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != 200) {
-            throw new HttpException(response, "HTTP status code " + response.statusCode() + " didn't match expected 200.");
-        } else {
-            return new GsonBuilder().serializeNulls().create().fromJson(response.body(), Guild[].class);
+        throwHttpException(response, 200);
+        return new GsonBuilder().serializeNulls().create().fromJson(response.body(), Guild[].class);
+    }
+
+    private static void throwHttpException(HttpResponse<String> response, int expectedStatusCode) throws HttpException {
+        if (response.statusCode() != expectedStatusCode) {
+            if (response.statusCode() == 429) {
+                RateLimitExceededResponse rateLimitExceededResponse = new Gson().fromJson(response.body(), RateLimitExceededResponse.class);
+                throw new RateLimitExceededException(response, "Rate limit exceeded.", rateLimitExceededResponse);
+            } else {
+                throw new HttpException(response, "HTTP status code " + response.statusCode() + " didn't match expected " + expectedStatusCode + ".");
+            }
         }
     }
 }

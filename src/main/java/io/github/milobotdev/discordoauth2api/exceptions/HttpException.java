@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.milobotdev.discordoauth2api;
+package io.github.milobotdev.discordoauth2api.exceptions;
 
 import java.net.http.HttpResponse;
 

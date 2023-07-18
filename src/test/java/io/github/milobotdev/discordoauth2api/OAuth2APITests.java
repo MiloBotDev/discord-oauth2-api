@@ -17,6 +17,8 @@
 package io.github.milobotdev.discordoauth2api;
 
 import com.google.gson.Gson;
+import io.github.milobotdev.discordoauth2api.exceptions.HttpException;
+import io.github.milobotdev.discordoauth2api.exceptions.RateLimitExceededException;
 import io.github.milobotdev.discordoauth2api.models.AccessTokenResponse;
 import io.github.milobotdev.discordoauth2api.models.Guild;
 import io.github.milobotdev.discordoauth2api.models.User;
@@ -48,6 +50,8 @@ public class OAuth2APITests {
     private static boolean fetchGuildsTestPassed = false;
     private static boolean exchangeRefreshTokenTestPassed = false;
     private static boolean fetchUserAfterRefreshTokenExchangeTestPassed = false;
+    private static boolean rateLimitTestPassed = false;
+    private static boolean rateLimitTestAbleToRun = true;
 
     @BeforeAll
     public static void init() throws IOException {
@@ -84,6 +88,12 @@ public class OAuth2APITests {
     @Test
     public void testFetchUserAfterRefreshTokenExchange() {
         assertTrue(fetchUserAfterRefreshTokenExchangeTestPassed);
+    }
+
+    @Test
+    public void testRateLimit() {
+        assumeTrue(rateLimitTestAbleToRun);
+        assertTrue(rateLimitTestPassed);
     }
 
     private static void readConfig() throws IOException {
@@ -204,6 +214,30 @@ public class OAuth2APITests {
                 " Discriminator: " + user.discriminator());
         fetchUserAfterRefreshTokenExchangeTestPassed = true;
         System.out.println("Fetch user after refresh token exchange test passed. All tests passed.");
-        System.out.println("ALL TESTS PASSED");
+        System.out.println("Testing rate limit error by continually fetching user's guilds until we exceed rate limit...");
+        for (int i=0; i<100000; i++) {
+            System.out.println("Iteration: " + i);
+            try {
+                DiscordOAuth2API.fetchGuilds(accessTokenResponse.accessToken());
+            } catch (RateLimitExceededException e) {
+                System.out.println("Rate limit exceeded response: " + e.getRateLimitExceededResponse());
+                assertTrue(e.getRateLimitExceededResponse().retryAfter() > 0);
+                rateLimitTestPassed = true;
+                break;
+            } catch (IOException | InterruptedException | HttpException e) {
+                System.out.println("Exception thrown while fetching user's guilds, rate limit test failed. " +
+                        "No further tests will be run.");
+                e.printStackTrace();
+                return;
+            }
+        }
+        if (!rateLimitTestPassed) {
+            System.out.println("Rate limit not exceeded after fetching user's' guilds 100,000 times. " +
+                    "This does not indicate failure, but rather that this test was unable to run.");
+            rateLimitTestAbleToRun = false;
+            return;
+        }
+        System.out.println("Rate limit exceeded, rate limit test passed. All tests passed.");
+        System.out.println("ALL TESTS RUN");
     }
 }
